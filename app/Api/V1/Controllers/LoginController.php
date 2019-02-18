@@ -2,6 +2,8 @@
 
 namespace App\Api\V1\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 
 /**
@@ -16,7 +18,16 @@ class LoginController extends Controller {
 	 *
 	 * @return \Illuminate\Http\JsonResponse
 	 */
-	public function login(){
+	public function login(Request $request){
+		$validator = Validator::make($request->all(), [
+			'email' => 'required|string|email',
+			'password' => 'required|string',
+		]);
+
+		if ($validator->fails()){
+			return response()->json($validator->errors()->toJson(), 400);
+		}
+
 		$credentials = request(['email', 'password']);
 
 		if (!$token = auth()->attempt($credentials)){
