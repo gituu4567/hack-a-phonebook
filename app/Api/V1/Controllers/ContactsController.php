@@ -88,7 +88,7 @@ class ContactsController extends Controller {
 		$validator = Validator::make($request->all(), [
 			'first_name' => 'string|max:128',
 			'last_name' => 'string|max:128',
-			'mobile' => 'numeric|max:15',
+			'mobile' => 'string|max:15',
 		]);
 
 		if ($validator->fails()){

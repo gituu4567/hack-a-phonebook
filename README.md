@@ -64,5 +64,6 @@
 
 
 ## Testing
+* Run `composer test`
 
 
