@@ -1,17 +1,19 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Api\V1\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
- * Class AuthController
- * @package App\Http\Controllers
+ * Class RegisterController
+ * @package App\Api\V1\Controllers
  */
-class ApiAuthController extends Controller {
+class RegisterController extends Controller {
 
 	/**
 	 * Signup a new user
@@ -23,35 +25,23 @@ class ApiAuthController extends Controller {
 	public function register(Request $request){
 		$validator = Validator::make($request->all(), [
 			'email' => 'required|string|email|max:255|unique:users',
-			'password' => 'required|string|min:6|confirmed',
+			'password' => 'required|string|min:6',
 		]);
 
 		if ($validator->fails()){
 			return response()->json($validator->errors()->toJson(), 400);
 		}
 
-		$user = User::create([
+		$user = new User([
 			'email' => $request->email,
 			'password' => Hash::make($request->get('password')),
 		]);
 
-		$token = auth()->login($user);
-
-		return $this->tokenResponse($token);
-	}
-
-	/**
-	 * Sign in a new user
-	 * Respond with token
-	 *
-	 * @return \Illuminate\Http\JsonResponse
-	 */
-	public function login(){
-		$credentials = request(['email', 'password']);
-
-		if (!$token = auth()->attempt($credentials)){
-			return response()->json(['error' => 'Unauthorized'], 401);
+		if (!$user->save()){
+			throw new HttpException(500, "Internal server error");
 		}
+
+		$token = auth()->login($user);
 
 		return $this->tokenResponse($token);
 	}
@@ -60,7 +50,7 @@ class ApiAuthController extends Controller {
 	 * @param $token
 	 * @return \Illuminate\Http\JsonResponse
 	 */
-	protected function tokenResponse($token){
+	private function tokenResponse($token){
 		return response()->json([
 			'access_token' => $token,
 			'token_type' => 'bearer',

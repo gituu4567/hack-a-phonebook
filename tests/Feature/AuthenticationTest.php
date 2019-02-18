@@ -4,7 +4,8 @@ namespace Tests\Feature;
 
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\TestCase;
+use PHPUnit\Framework\TestResult;
 
 class AuthenticationTest extends TestCase {
 	use DatabaseMigrations;

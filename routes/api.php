@@ -11,20 +11,28 @@
 |
 */
 
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+use Dingo\Api\Routing\Router;
+/** @var Router $api */
+$api = app(Router::class);
 
-Route::post('/register', 'AuthController@register');
-Route::post('/login', 'AuthController@login');
+$api->version('v1', function (Router $api) {
+    $api->group(['prefix' => 'auth'], function(Router $api) {
+        $api->post('register', 'App\\Api\\V1\\Controllers\\RegisterController@register');
+        $api->post('login', 'App\\Api\\V1\\Controllers\\LoginController@login');
+    });
 
-Route::group(['middleware' => ['jwt.verify']], function() {
-    Route::post('phonebook/create', 'PhonebookController@create');
-    Route::get('phonebook/read', 'PhonebookController@read');
-    Route::get('phonebook/update', 'PhonebookController@update');
-    Route::get('phonebook/delete', 'PhonebookController@delete');
-    Route::get('phonebook/remove', 'PhonebookController@remove');
+    $api->group(['middleware' => 'jwt.auth|bindings', 'prefix' => 'contacts'], function(Router $api) {
+        $api->post('create', 'App\\Api\\V1\\Controllers\\ContactsController@create');
+        $api->get('get', 'App\\Api\\V1\\Controllers\\ContactsController@getAll');
+        $api->get('get/{contact}', 'App\\Api\\V1\\Controllers\\ContactsController@get');
+        $api->post('update/{contact}', 'App\\Api\\V1\\Controllers\\ContactsController@update');
+        $api->delete('delete/{contact}', 'App\\Api\\V1\\Controllers\\ContactsController@delete');
+    });
+
+    $api->get('hello', function() {
+        return response()->json([
+            'message' => 'This is a simple example of item returned by your APIs. Everyone can see it.'
+        ]);
+    });
 });

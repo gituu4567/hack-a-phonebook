@@ -24,6 +24,7 @@ class JwtMiddleware extends BaseMiddleware {
 	 * @return mixed
 	 */
 	public function handle($request, Closure $next){
+		$jwt = new JWTAuth();
 		try {
 			$user = JWTAuth::parseToken()->authenticate();
 		}
