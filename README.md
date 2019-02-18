@@ -34,15 +34,18 @@
 * JWT_SECRET must be set, after you run php artisan jwt:secret above
 * add `API_PREFIX=api`
 
-## Routes. Suggest using postman to test. Pass request param token for /api/contacts/ to works
+## API Routes
 
+### Auth routes: register and login both return a token that can be used
 * `/api/auth/register`
 * `/api/auth/login`
-* `/api/contacts/create`
-* `/api/contacts/get`
-* `/api/contacts/get/{id}`
-* `/api/contacts/update/{id}`
-* `/api/contacts/delete/{id}`
+
+### Pass request param `token` received by login or register above into below routes.
+* `POST`: `/api/contacts/create`
+* `GET`: `/api/contacts/get`
+* `GET`: `/api/contacts/get/{id}`
+* `POST`: `/api/contacts/update/{id}`
+* `DELETE`: `/api/contacts/delete/{id}`
 
 ### Postman
 * import hackaphonebook-localhost.postman_collection.json into postman to test routes
